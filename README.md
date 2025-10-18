@@ -1,0 +1,1 @@
+Codes and queries written by me for the Database Systems lab in my course's fourth semester, in Oracle SQL and PL/SQL covering concepts like DDL, DML commands, data retrieval, joining tables etc. and PL/SQL triggers, procedures, functions etc.
