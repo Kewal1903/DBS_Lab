@@ -1,0 +1,293 @@
+SQL> create or replace procedure acc(
+  2  acc_no in varchar2,
+  3  with_amu in number,
+  4  bal in out number,
+  5  new_bal out number)
+  6  is
+  7  begin
+  8  select balance into bal from account where account_number = acc_no;
+  9  new_bal := bal - with_amu;
+ 10  case
+ 11  when new_bal > 1000 then
+ 12  update account set balance = new_bal where account_number = acc_no;
+ 13  dbms_output.put_line('Current balance : ' || bal);
+ 14  dbms_output.put_line('Withdrawal of : ' || with_amu || ' is succesful');
+ 15  dbms_output.put_line('Updated current balance ' || new_bal);
+ 16  when new_bal <= 1000 then
+ 17  dbms_output.put_line('Current balance : ' || bal);
+ 18  dbms_output.put_line('Insufficient fund to withdraw, try with lower amount');
+ 19  end case;
+ 20  end;
+ 21  /
+
+Procedure created.
+
+SQL> set serveroutput on
+SQL> declare
+  2  acc_no account.account_number%type;
+  3  with_amu number(10);
+  4  bal account.balance%type;
+  5  new_bal account.balance%type;
+  6  begin
+  7  acc_no := &account_number;
+  8  with_amu := &withdraw_amount;
+  9  acc(acc_no, with_amu, new_bal);
+ 10  end;
+ 11  /
+
+Enter value for account_number: 'acc-005'
+old   8: acc_no:=&account_number;
+new   8: acc_no:='acc-005';
+Enter value for withdraw_amount: 800
+old   9: with_amu:=&withdraw_amount;
+new   9: with_amu:=800;
+current balance:1200
+insufficient fund to withdraw, try with lesser withdrawal amount
+
+
+SQL> create or replace procedure work(skill_exp in number) is
+  2  cursor project is select s.skillname,count(s.skillname) human_resource_available from skill s natural join emp_skill e where e.skill_experience>=skill_exp group by s.skillname;
+  3
+  4  begin
+  5
+  6  dbms_output.put_line('human resource for skill experience '||skill_exp ||' are: ');
+  7  for i in project loop
+  8  dbms_output.put_line('skill name: '||i.skillname);
+  9  dbms_output.put_line('human resource: '|| i.human_resource_available);
+ 10  dbms_output.put_line('--------------------------------');
+ 11  end loop;
+ 12
+ 13  end;
+ 14  /
+
+Procedure created.
+
+SQL> set serveroutput on
+SQL> declare
+  2  skill emp_skill.skill_experience%type;
+  3
+  4  begin
+  5  skill:=&skill_experience;
+  6  work(skill);
+  7  end;
+  8  /
+Enter value for skill_experience: 13
+old   5: skill:=&skill_experience;
+new   5: skill:=13;
+human resource for skill experience 13 are:
+skill name: Oracle
+human resource: 2
+--------------------------------
+skill name: Full Stack
+human resource: 2
+--------------------------------
+skill name: C++
+human resource: 1
+--------------------------------
+
+PL/SQL procedure successfully completed.
+
+
+SQL> CREATE OR REPLACE PROCEDURE addbud(
+  2      project_id IN prj_details.prjid%TYPE,
+  3      additional_budget OUT NUMBER
+  4  ) IS
+  5      vadd_days NUMBER;
+  6      vend_date prj_details.end_date%TYPE;
+  7      vactual_end_date prj_details.actual_end_date%TYPE;
+  8      vperday_cost NUMBER;
+  9      vbudget_allocated prj_details.budget_allocated%TYPE;
+ 10      vduration NUMBER;
+ 11      vstart_date prj_details.start_date%TYPE;
+ 12  BEGIN
+ 13      
+ 14      SELECT end_date, actual_end_date, budget_allocated, start_date
+ 15      INTO vend_date, vactual_end_date, vbudget_allocated, vstart_date
+ 16      FROM prj_details
+ 17      WHERE prjid = project_id;
+ 18
+ 19      -- Calculate additional days based on actual end date and project end date
+ 20      vadd_days := ROUND(vactual_end_date - vend_date); 
+ 21
+ 22      -- Calculate project duration in days
+ 23      vduration := ROUND(vend_date - vstart_date); 
+ 24
+ 25      -- Calculate per day cost
+ 26      IF vduration != 0 THEN
+ 27          vperday_cost := ROUND(vbudget_allocated / vduration, 0);
+ 28      ELSE
+ 29          vperday_cost := 0;
+ 30      END IF;
+ 31
+ 32     
+ 33      additional_budget := vadd_days * vperday_cost;
+ 34
+ 35  END;
+ 36  /
+
+Procedure created.
+
+set serveroutput on 
+declare
+prj_id prj_details.prjid%type;
+name emp.name%type;
+reportname emp.name%type;
+reportemail emp.email%type;
+vreports_to emp.reports_to%type;
+additional_budget number(20);
+
+begin
+prj_id:=&project_id;
+select e.name,e.reports_to into name,vreports_to from emp e join prj_details p on e.empcode = p.lead_by_empcode where p.prjid = prj_id;
+addbud(prj_id,additional_budget);
+if vreports_to is not null then
+  select e.name,e.email into reportname,reportemail from emp e where e.empcode = vreports_to;
+else
+  reportname := 'N/A';//as the ceo has null as reports to
+  reportemail := 'N/A';
+end if;
+dbms_output.put_line('Name of Project Leader: '||name);
+dbms_output.put_line('Name and email of Employee to whom Project leader reports to: '||reportname|| '  '||reportemail);
+dbms_output.put_line('Additional Budget Needed: '||additional_budget);
+
+end;
+/
+
+
+//output
+Enter value for project_id: 'P2'
+old  10: prj_id:=&project_id;
+new  10: prj_id:='P2';
+Name of Project Leader: AJAY
+Name and email of Employee to whom Project leader reports to: ABHI
+abhih@digisol.com
+Additional Budget Needed: 2890456
+
+Enter value for project_id: 'P3'
+old  10: prj_id:=&project_id;
+new  10: prj_id:='P3';
+Name of Project Leader: PRSAD
+Name and email of Employee to whom Project leader reports to: N/A  N/A
+Additional Budget Needed: 297240
+
+CREATE OR REPLACE FUNCTION calculate_incentive(project_id IN prj_details.prjid%type) RETURN NUMBER IS
+  2      total_incentive NUMBER := 0;
+  3      cursor emp is SELECT empcode, rating FROM work_exp WHERE prjid = project_id;
+
+  4  BEGIN
+  5      FOR emp_rec IN emp LOOP
+  6          IF emp_rec.rating = 'A' THEN
+  7              total_incentive := total_incentive + 30000;
+  8          ELSIF emp_rec.rating = 'B' THEN
+  9              total_incentive := total_incentive + 20000;
+ 10          ELSIF emp_rec.rating = 'C' THEN
+ 11              total_incentive := total_incentive + 10000;
+ 12          END IF;
+ 13      END LOOP;
+ 14
+ 15      RETURN total_incentive;
+ 16  END;
+ 17  /
+
+Function created.
+SQL> SET SERVEROUTPUT ON;
+SQL>
+SQL> DECLARE
+  2      project_id_input prj_details.prjid%type;
+  3      total_incentive_output NUMBER;
+  4  BEGIN
+  5      project_id_input := &project_id;
+  6      total_incentive_output := calculate_incentive(project_id_input);
+  7      DBMS_OUTPUT.PUT_LINE('Total Incentive for Project ' || project_id_input || ': ' || total_incentive_output);
+  8  END;
+  9  /
+Enter value for project_id: 'P2'
+old   5:     project_id_input := &project_id;
+new   5:     project_id_input := 'P2';
+Total Incentive for Project P2 : 50000
+
+PL/SQL procedure successfully completed.
+
+SQL> CREATE OR REPLACE FUNCTION phone(phone_code IN VARCHAR2)
+  2  RETURN VARCHAR2
+  3  IS
+  4      code VARCHAR2(255) := phone_code || '%';  -- Concatenate '%' for LIKE pattern
+  5      names VARCHAR2(4000) := '';  -- Initialize names as an empty string (Oracle doesn't like ' ' as initial value)
+  6
+  7      CURSOR clientphone IS
+  8          SELECT name
+  9          FROM client
+ 10          WHERE phone LIKE code;
+ 11  BEGIN
+ 12      -- Loop through the records in the clientphone cursor
+ 13      FOR cli_rec IN clientphone LOOP
+ 14          -- Concatenate names, making sure to avoid an extra comma at the end
+ 15          IF names IS NULL OR names = '' THEN
+ 16              names := cli_rec.name;  -- Don't add a comma for the first name
+ 17          ELSE
+ 18              names := names || ',' || cli_rec.name;  -- Add comma before subsequent names
+ 19          END IF;
+ 20      END LOOP;
+ 21
+ 22      -- Return the concatenated names
+ 23      RETURN names;
+ 24  END;
+ 25  /
+
+Function created.
+
+SQL> set serveroutput on
+SQL> declare
+  2  phone_code varchar(255);
+  3  names varchar(255);
+  4
+  5  begin
+  6  phone_code:=&phone_code;
+  7  names:= phone(phone_code);
+  8  dbms_output.put_line('Clients with this phone code are:');
+  9  dbms_output.put_line(names);
+ 10
+ 11  end;
+ 12  /
+Enter value for phone_code: +91
+old   6: phone_code:=&phone_code;
+new   6: phone_code:=+91;
+Clients with this phone code are:
+
+PL/SQL procedure successfully completed.
+
+SQL> create or replace function email(empno in emp.empcode%type)
+  2  return varchar
+  3  is
+  4  email varchar(255) :=' ';
+  5  vname emp.name%type;
+  6
+  7  begin
+  8  select name into vname from emp where empcode=empno;
+  9  email:=concat(concat(concat(vname,'_'),empno),'@digisol.com');
+ 10  return email;
+ 11  end;
+ 12  /
+
+Function created.
+set serveroutput on 
+declare
+empno emp.empcode%type;
+vemail varchar(255);////the calling and returing ideally same dtype and size
+
+begin
+empno:=&empno;
+vemail:=email(empno);
+dbms_output.put_line('Email is: '||vemail);
+end;
+/
+
+//output
+Enter value for empno: 106
+old   6: empno:=&empno;
+new   6: empno:=106;
+Email is: PRSAD_106@digisol.com
+
+
+
+

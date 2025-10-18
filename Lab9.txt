@@ -1,0 +1,150 @@
+SQL> create or replace trigger t1
+  2  before update of salary on emp
+  3  for each row
+  4
+  5  declare
+  6  increment number(10);
+  7  designation emp.designation%type :=:old.designation;
+  8  min_salary number(10);
+  9  max_salary number(10);
+ 10
+ 11  begin
+ 12  increment:=:new.salary-:old.salary;
+ 13  if increment<0 then raise_application_error(-20001,'Increment cant be negative');
+ 14  end if;
+ 15
+ 16  case designation
+ 17      when 'DEVELOPER' then
+ 18         min_salary := 97000;
+ 19         max_salary := 120000;
+ 20          if increment>1000 then
+ 21              raise_application_error(-20002, 'Increment exceeds allowed limit for this designation.');
+ 22          end if;
+ 23          if  :new.salary < min_salary or :new.salary > max_salary then
+ 24              raise_application_error(-20003, 'Updated salary is not within the valid range for this designation.');
+ 25          end if;
+ 26      when 'PROJECT LEADER' then
+ 27          min_salary := 110000;
+ 28          max_salary := 140000;
+ 29          if increment>2000 then
+ 30              raise_application_error(-20002, 'Increment exceeds allowed limit for this designation.');
+ 31          end if;
+ 32          if  :new.salary < min_salary or :new.salary > max_salary then
+ 33              raise_application_error(-20003, 'Updated salary is not within the valid range for this designation.');
+ 34          end if;
+ 35      when 'PROJECT MANAGER' then
+ 36          min_salary := 120000;
+ 37          max_salary := 160000;
+ 38          if increment>3000 then
+ 39              raise_application_error(-20002, 'Increment exceeds allowed limit for this designation.');
+ 40          end if;
+ 41          if  :new.salary < min_salary or :new.salary > max_salary then
+ 42              raise_application_error(-20003, 'Updated salary is not within the valid range for this designation.');
+ 43          end if;
+ 44      when 'TECHNICAL HEAD' then
+ 45          min_salary := 140000;
+ 46          max_salary := 200000;
+ 47          if increment>3000 then
+ 48              raise_application_error(-20002, 'Increment exceeds allowed limit for this designation.');
+ 49          end if;
+ 50          if  :new.salary < min_salary or :new.salary > max_salary then
+ 51              raise_application_error(-20003, 'Updated salary is not within the valid range for this designation.');
+ 52          end if;
+ 53      when 'PROJECT DIRECTOR' then
+ 54          min_salary := 210000;
+ 55          max_salary := 270000;
+ 56          if increment>10000 then
+ 57              raise_application_error(-20002, 'Increment exceeds allowed limit for this designation.');
+ 58          end if;
+ 59          if  :new.salary < min_salary or :new.salary > max_salary then
+ 60              raise_application_error(-20003, 'Updated salary is not within the valid range for this designation.');
+ 61          end if;
+ 62      when 'CEO' then
+ 63          min_salary := 220000;
+ 64          max_salary := 300000;
+ 65          if increment>20000 then
+ 66              raise_application_error(-20002, 'Increment exceeds allowed limit for this designation.');
+ 67          end if;
+ 68          if  :new.salary < min_salary or :new.salary > max_salary then
+ 69              raise_application_error(-20003, 'Updated salary is not within the valid range for this designation.');
+ 70          end if;
+ 71  end case;
+ 72  end;
+ 73  /
+
+SQL> create or replace trigger t2 before insert or update of lead_by_empcode on prj_d
+etails
+  2  for each row
+  3  declare vdesignation emp.designation%type;
+  4  vskillexp work_exp.work_experience%type;
+  5  begin
+  6  if updating('lead_by_empcode') then
+  7  select e.designation, sum(w.work_experience) into vdesignation, vskillexp from e
+mp e join work_exp w on e.empcode = w.empcode where e.empcode = :new.lead_by_empcode
+group by e.designation;
+  8  if(vdesignation in ('project leader', 'project manager')) and vskillexp >- 18 th
+en null;
+  9  else raise_application_error(-20005, 'The employee with this employee code canno
+t lead a project');
+ 10  end if;
+ 11  else select e.designation, sum(w.work_experience) into vdesignation, vskillexp f
+rom emp e inner join work_exp w on e.empcode = w.empcode where e.empcode = :new.lead_
+by_empcode group by e.designation;
+ 12  if(vdesignation in ('project leader','project manager')) and vskillexp >= 18 the
+n null;
+ 13  else raise_application_error(-20005, 'The employee with this employee code canno
+t lead a project');
+ 14  end if;
+ 15  end if;
+ 16  end;
+ 17  /
+
+SQL> create or replace trigger t3 before update of actual_end_date, actual_budget on
+prj_details for each row
+  2  declare
+  3  valid_budget boolean;
+  4  valid_date boolean;
+  5  begin
+  6  if updating('actual_budget') then
+  7  if(:old.actual_budget * 1.15) < :new.actual_budget then
+  8  valid_budget := false;
+  9  else valid_budget := true;
+ 10  end if;
+ 11  end if;
+ 12  if updating('actual_end_date') then
+ 13  if months_between(:new.actual_end_date, :old.actual_end_date) > 3 then valid_dat
+e := false;
+ 14  else valid_date := true;
+ 15  end if;
+ 16  end if;
+ 17  if valid_budget = false or valid_date = false then raise_application_error(-2000
+1,'Need to take approval through proper channel for updation.');
+ 18  end if;
+ 19  end;
+ 20  /
+
+SQL> create or replace trigger t4
+  2  before delete on skill
+  3  for each row
+  4  declare
+  5      count_skill number(10);
+  6      highest_skill_exp emp_skill.skill_experience%type;
+  7  begin
+  8      select count(empno) into count_skill from  emp_skill where skillid = :old.skillid;
+  9      if count_skill = 1 then
+ 10          raise_application_error(-20006,'only one employee corresponding to skill so cant delete the record');
+ 11      elsif count_skill > 1 then
+ 12          select max(skill_experience) into highest_skill_exp from emp_skill where skillid = :old.skillid ;
+ 13
+ 14          for emp_rec in (
+ 15              select empno
+ 16              from emp_skill
+ 17              where skillid = :old.skillid
+ 18              and skill_experience < highest_skill_exp
+ 19              and rownum < count_skill) loop
+ 20               --row num to handle if two have same max skill experience
+ 21                  delete from emp_skill where empno = emp_rec.empno;
+ 22          end loop;
+ 23      end if;
+ 24  end;
+ 25  /

@@ -1,0 +1,280 @@
+SQL> select name from emp where designation = (select designation from emp where empcode = 100);
+
+NAME                                                                            
+----------                                                                      
+Rajesh                                                                          
+Manish                                                                          
+Rakesh                                                                          
+Rakesh                                                                          
+Puneet                                                                          
+Raj                                                                             
+
+6 rows selected.
+
+SQL> select name from emp where reports_to in (select empcode from emp where name = 'Vijay');
+
+NAME                                                                            
+----------                                                                      
+Ravi                                                                            
+Raj                                                                             
+
+SQL> spool off;
+SQL> select e.name, e.designation, e.email from emp e where e.empcode in(select pd.lead_by_empcode from prj_details pd where pd.prjid in(select pd2.prjid from prj_details pd2 where pd2.lead_by_empcode = (select empcode from emp where name = 'Vijay')));
+
+NAME       DESIGNATION          EMAIL                                           
+---------- -------------------- --------------------                            
+Vijay      project manager      vijay@digisol.com                               
+
+
+SQL> select e.name from emp e join family_dependents fd on e.empcode = fd.empno where fd.relationship = 'Daughter';
+
+NAME                                                                            
+----------                                                                      
+Rajesh                                                                          
+Ravi                                                                            
+
+SQL> spool off;
+
+SQL> select e.name from emp e where e.empcode not in (select pd.lead_by_empcode from
+prj_details pd where pd.prj_name = 'SPYDER');
+
+NAME
+----------
+Rajesh
+Ravi
+Vijay
+Manish
+Raj
+Prasad
+Ajay
+Rajat
+Bhaskar
+Raj
+Rakesh
+
+NAME
+----------
+Rakesh
+Puneet
+
+13 rows selected.
+
+SQL> select e.name from emp e where exists(select 1 from emp_skill es1 where es1.empn
+o = e.empcode and es1.skillid in (select es2.skillid from emp_skill es2 join prj_deta
+ils pd on es2.empno = pd.lead_by_empcode where pd.prj_name = 'P1'));
+
+no rows selected
+
+SQL> select e.name from emp e where(select w1.work_experience from work_exp w1 join prj_details pd1 on w1.prjid = pd1.prjid where w1.empcode = e.empcode and pd1.prjid = 'P1') > all (select w2.work_experience from work_exp w2 join prj_details pd2 on w2.prjid = pd2.prjid where pd2.prjid = 'P2');
+
+NAME
+----------
+Rajesh
+Ravi
+Vijay
+Ajay
+Bhaskar
+Raj
+Manish
+Prasad
+Rakesh
+Rakesh
+Rajat
+
+NAME
+----------
+Puneet
+Raj
+
+13 rows selected.
+
+SQL> select e.name from emp e where exists(select 1 from work_exp we1 join prj_details pd1 on we1.prjid = pd1.prjid join client c1 on we1.clientid = c1.clientid where we1.empcode = 100 and we1.prjid = we1.prjid and we1.clientid = we1.clientid and exists( select 1 from work_exp we2 where we2.empcode = e.empcode and we2.prjid = we1.prjid and we2.clientid = we1.clientid));
+
+NAME                                                                            
+----------                                                                      
+Rajesh                                                                          
+Raj                                                                             
+
+SQL> select e.name from emp e where e.empcode not in(select we.empcode from work_exp we where we.prjid in(select we2.prjid from work_exp we2 where we2.empcode = 106));
+
+NAME                                                                            
+----------                                                                      
+Ravi                                                                            
+Vijay                                                                           
+Manish                                                                          
+Prasad                                                                          
+Ajay                                                                            
+Rajat                                                                           
+Raj                                                                             
+Rakesh                                                                          
+Rakesh                                                                          
+Puneet                                                                          
+
+10 rows selected.
+
+SQL> select pd.prj_name from prj_details pd where pd.budget_allocated > (select sum(e.salary) from work_exp we join emp e on we.empcode = e.empcode where we.prjid = pd.prjid) group by pd.prj_name, pd.budget_allocated;
+
+PRJ_NAME                                                                        
+----------                                                                      
+Spyder                                                                          
+Unicorn                                                                         
+Zeus                                                                            
+Jupitor                                                                         
+Apollo                                                                          
+XXX                                                                             
+
+6 rows selected.
+
+SQL> select pd.prj_name, count(distinct e.empcode) as num_employees from prj_details pd join work_exp we on pd.prjid = we.prjid join emp e on we.empcode = e.empcode where we.rating in ('A', 'B') and e.reports_to = pd.lead_by_empcode group by pd.prj_name order by num_employees desc;
+
+PRJ_NAME   NUM_EMPLOYEES                                                        
+---------- -------------                                                        
+Spyder                 1                                                        
+
+SQL> select pd.prj_name from prj_details pd join work_exp we on pd.prjid = we.prjid group by pd.prj_name having count(distinct we.empcode) > 2;
+
+PRJ_NAME                                                                        
+----------                                                                      
+Apollo                                                                          
+Spyder                                                                          
+Jupitor                                                                         
+
+
+
+
+SQL> select e.name, count(fd.empno) as num_dependents from emp e left join family_dependents fd on e.empcode = fd.empno group by e.name;
+
+NAME       NUM_DEPENDENTS                                                       
+---------- --------------                                                       
+Ajay                    0                                                       
+Rajesh                  2                                                       
+Manish                  0                                                       
+Bhaskar                 0                                                       
+Rakesh                  0                                                       
+Rajat                   0                                                       
+Vijay                   0                                                       
+Ravi                    3                                                       
+Raj                     0                                                       
+Prasad                  0                                                       
+Puneet                  0                                                       
+
+11 rows selected.
+
+
+
+
+SQL> select extract(year from policydate) as year, sum(premium) as total_premium from medical_policy group by extract(year from policydate) order by year;
+
+      YEAR TOTAL_PREMIUM                                                        
+---------- -------------                                                        
+      2020         22000                                                        
+      2021         31000                                                        
+
+SQL> with totalExp as(select es.empno, sum(es.skill_experience) as totalExp from emp_skill es group by es.empno) select e.name from emp e join totalExp te on e.empcode = te.empno where te.totalExp > 20;
+
+NAME                                                                            
+----------                                                                      
+Rajesh                                                                          
+Ravi                                                                            
+Manish                                                                          
+Raj                                                                             
+Ajay                                                                            
+Bhaskar                                                                         
+
+6 rows selected.
+
+SQL> create table emp_prj(emp_name varchar(100), budget number, project_name varchar(100));
+
+Table created.
+
+SQL> insert into emp_prj(emp_name, budget, project_name) select e.name, pd.budget_allocated, pd.prj_name from prj_details pd join emp e on pd.lead_by_empcode = e.empcode where pd.lead_by_empcode = 110;
+
+2 rows created.
+
+SQL> update emp set salary = case
+  2  when designation = 'project leader' then salary * 1.10
+  3  when designation = 'developer' then salary * 1.05
+  4  else salary
+  5  end;
+
+13 rows updated.
+
+SQL> create view emp_skill_experience as with totalExp as (select es.empno, sum(es.skill_experience) as totalExp from emp_skill es group by es.empno) select e.name as employee_name, s.skillname as skill_name, es.skill_experience from emp_skill es join emp e on es.empno = e.empcode join skill s on es.skillid = s.skillid join totalExp te on es.empno = te.empno where te.totalExp > 20;
+
+View created.
+
+SQL> select * from emp_skill_experience
+  2  ;
+
+EMPLOYEE_N SKILL_NAME           SKILL_EXPERIENCE                                
+---------- -------------------- ----------------                                
+Bhaskar    Full Stack                         14                                
+Ravi       Full Stack                          6                                
+Rajesh     Full Stack                         15                                
+Ravi       Python                             10                                
+Raj        Python                             10                                
+Ravi       Java                                7                                
+Rajesh     Java                               10                                
+Ajay       Oracle                             18                                
+Bhaskar    Oracle                             20                                
+Raj        Oracle                             12                                
+Manish     Android                            12                                
+
+EMPLOYEE_N SKILL_NAME           SKILL_EXPERIENCE                                
+---------- -------------------- ----------------                                
+Raj        Azure                              10                                
+Ajay       DOT NET                             5                                
+Manish     iOS                                11                                
+
+14 rows selected.
+
+SQL> update emp_skill set skill_experience = skill_experience + 5 where empno = 101 and skillid = (select skillid from skill where skillname = 'Java');
+
+1 row updated.
+
+SQL> select * from emp_skill_experience where employee_name = (select name from emp where empcode = 101);
+
+EMPLOYEE_N SKILL_NAME           SKILL_EXPERIENCE                                
+---------- -------------------- ----------------                                
+Ravi       Full Stack                          6                                
+Ravi       Python                             10                                
+Ravi       Java                               12                                
+
+SQL> create view emp_designation as select empcode as empno, name, salary from emp where designation in ('developer', 'project leader');
+
+View created.
+
+SQL> update emp set salary = salary * 1.1 where empcode = 101;
+
+1 row updated.
+
+SQL> select * from emp_designation where empno = 101;
+
+     EMPNO NAME           SALARY                                                
+---------- ---------- ----------                                                
+       101 Ravi           193600                                                
+
+SQL> select e.name as employee_name, (select count(*) from prj_details p where p.lead_by_empcode = e.reports_to) as number_of_projects from emp e;
+
+EMPLOYEE_N NUMBER_OF_PROJECTS                                                   
+---------- ------------------                                                   
+Rajesh                      1                                                   
+Ravi                        1                                                   
+Vijay                       2                                                   
+Ajay                        2                                                   
+Bhaskar                     2                                                   
+Raj                         2                                                   
+Manish                      2                                                   
+Prasad                      0                                                   
+Rakesh                      0                                                   
+Rakesh                      0                                                   
+Rajat                       0                                                   
+
+EMPLOYEE_N NUMBER_OF_PROJECTS                                                   
+---------- ------------------                                                   
+Puneet                      2                                                   
+Raj                         1                                                   
+
+13 rows selected.
+
+SQL> spool off;

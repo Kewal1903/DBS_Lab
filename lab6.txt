@@ -1,0 +1,427 @@
+SQL> select upper(name) as upper_name from emp;
+
+UPPER_NAME                                                                      
+----------                                                                      
+RAJESH                                                                          
+RAVI                                                                            
+VIJAY                                                                           
+AJAY                                                                            
+BHASKAR                                                                         
+RAJ                                                                             
+MANISH                                                                          
+PRASAD                                                                          
+RAKESH                                                                          
+RAKESH                                                                          
+RAJAT                                                                           
+
+UPPER_NAME                                                                      
+----------                                                                      
+PUNEET                                                                          
+RAJ                                                                             
+
+13 rows selected.
+
+SQL> select lower(name) as lower_name from emp;
+
+LOWER_NAME                                                                      
+----------                                                                      
+rajesh                                                                          
+ravi                                                                            
+vijay                                                                           
+ajay                                                                            
+bhaskar                                                                         
+raj                                                                             
+manish                                                                          
+prasad                                                                          
+rakesh                                                                          
+rakesh                                                                          
+rajat                                                                           
+
+LOWER_NAME                                                                      
+----------                                                                      
+puneet                                                                          
+raj                                                                             
+
+13 rows selected.
+
+SQL> select INITCAP(name) from emp;
+
+INITCAP(NA                                                                      
+----------                                                                      
+Rajesh                                                                          
+Ravi                                                                            
+Vijay                                                                           
+Ajay                                                                            
+Bhaskar                                                                         
+Raj                                                                             
+Manish                                                                          
+Prasad                                                                          
+Rakesh                                                                          
+Rakesh                                                                          
+Rajat                                                                           
+
+INITCAP(NA                                                                      
+----------                                                                      
+Puneet                                                                          
+Raj                                                                             
+
+13 rows selected.
+
+SQL> SELECT name || ' Works as ' || designation || '.' AS employee_info
+  2  FROM emp;
+
+EMPLOYEE_INFO                                                                   
+-----------------------------------------                                       
+Rajesh Works as developer.                                                      
+Ravi Works as project leader.                                                   
+Vijay Works as project manager.                                                 
+Ajay Works as technical head.                                                   
+Bhaskar Works as project director.                                              
+Raj Works as project leader.                                                    
+Manish Works as developer.                                                      
+Prasad Works as ceo.                                                            
+Rakesh Works as developer.                                                      
+Rakesh Works as developer.                                                      
+Rajat Works as project director.                                                
+
+EMPLOYEE_INFO                                                                   
+-----------------------------------------                                       
+Puneet Works as developer.                                                      
+Raj Works as developer.                                                         
+
+13 rows selected.
+
+SQL> select lpad(salary, 10, '*') as padded_salary from emp;
+
+PADDED_SALARY                                                                   
+----------------------------------------                                        
+****212100                                                                      
+****193600                                                                      
+****220000                                                                      
+****250000                                                                      
+****145000                                                                      
+****132000                                                                      
+****106050                                                                      
+****280000                                                                      
+****111353                                                                      
+****143168                                                                      
+****205000                                                                      
+
+PADDED_SALARY                                                                   
+----------------------------------------                                        
+****159075                                                                      
+****137865                                                                      
+
+13 rows selected.
+
+SQL> select rpad(salary,10,'*') as padded_salary from emp;
+
+PADDED_SALARY                                                                   
+----------------------------------------                                        
+212100****                                                                      
+193600****                                                                      
+220000****                                                                      
+250000****                                                                      
+145000****                                                                      
+132000****                                                                      
+106050****                                                                      
+280000****                                                                      
+111353****                                                                      
+143168****                                                                      
+205000****                                                                      
+
+PADDED_SALARY                                                                   
+----------------------------------------                                        
+159075****                                                                      
+137865****                                                                      
+
+13 rows selected.
+
+SQL> select length(name) as name_length from emp;
+
+NAME_LENGTH                                                                     
+-----------                                                                     
+          6                                                                     
+          4                                                                     
+          5                                                                     
+          4                                                                     
+          7                                                                     
+          3                                                                     
+          6                                                                     
+          6                                                                     
+          6                                                                     
+          6                                                                     
+          5                                                                     
+
+NAME_LENGTH                                                                     
+-----------                                                                     
+          6                                                                     
+          3                                                                     
+
+13 rows selected.
+
+
+SQL> select substr(email,3,9) as email_substring from emp;
+
+EMAIL_SUBSTRING                                                                 
+------------------------------------                                            
+jesh@digi                                                                       
+vi@digiso                                                                       
+jay@digis                                                                       
+ay@digiso                                                                       
+askar@dig                                                                       
+j@digisol                                                                       
+nish@digi                                                                       
+asad@digi                                                                       
+kesh@digi                                                                       
+kesh1@dig                                                                       
+jat@digis                                                                       
+
+EMAIL_SUBSTRING                                                                 
+------------------------------------                                            
+neet@digi                                                                       
+j1@digiso                                                                       
+
+13 rows selected.
+
+SQL> select replace(email, 'digisol', 'digitech') as updated_email from emp;
+
+UPDATED_EMAIL                                                                   
+--------------------------------------------------------------------------------
+rajesh@digitech.com                                                             
+ravi@digitech.com                                                               
+vijay@digitech.com                                                              
+ajay@digitech.com                                                               
+bhaskar@digitech.com                                                            
+raj@digitech.com                                                                
+manish@digitech.com                                                             
+prasad@digitech.com                                                             
+rakesh@digitech.com                                                             
+rakesh1@digitech.com                                                            
+rajat@digitech.com                                                              
+
+UPDATED_EMAIL                                                                   
+--------------------------------------------------------------------------------
+puneet@digitech.com                                                             
+raj1@digitech.com                                                               
+
+13 rows selected.
+
+
+SQL> SELECT e.name || ' - ' || f.dep_name AS employee_and_dependent
+  2  FROM emp e
+  3  JOIN family_dependents f ON e.empcode = f.empno;
+
+EMPLOYEE_AND_DEPENDENT                                                          
+---------------------------------                                               
+Rajesh - Prithvi                                                                
+Rajesh - Ajith                                                                  
+Ravi - Akanksh                                                                  
+Ravi - Anitha                                                                   
+Ravi - Aarya                                                                    
+
+SQL> spool off;
+SQL> select clientid, length(clientid) from client;
+
+CLI LENGTH(CLIENTID)                                                            
+--- ----------------                                                            
+C02                3                                                            
+C03                3                                                            
+C04                3                                                            
+C05                3                                                            
+C06                3                                                            
+C07                3                                                            
+C08                3                                                            
+C09                3                                                            
+
+8 rows selected.
+
+SQL> SELECT RTRIM(ClientID) AS trimmed_client_id, LENGTH(RTRIM(ClientID)) AS trimmed_client_id_length
+  2  FROM client;
+
+TRI TRIMMED_CLIENT_ID_LENGTH                                                    
+--- ------------------------                                                    
+C02                        3                                                    
+C03                        3                                                    
+C04                        3                                                    
+C05                        3                                                    
+C06                        3                                                    
+C07                        3                                                    
+C08                        3                                                    
+C09                        3                                                    
+
+8 rows selected.
+
+SQL> SELECT LTRIM(ClientID) AS trimmed_client_id, LENGTH(LTRIM(ClientID)) AS trimmed_client_id_length from client;
+
+TRI TRIMMED_CLIENT_ID_LENGTH                                                    
+--- ------------------------                                                    
+C02                        3                                                    
+C03                        3                                                    
+C04                        3                                                    
+C05                        3                                                    
+C06                        3                                                    
+C07                        3                                                    
+C08                        3                                                    
+C09                        3                                                    
+
+8 rows selected.
+
+SQL> select ascii('A') as ascii_value_of_A,
+  2  chr(65) as character_for_ascii_65
+  3  from dual;
+
+ASCII_VALUE_OF_A C                                                              
+---------------- -                                                              
+              65 A                                                              
+
+SQL> select trunc(123.456,2) from dual;
+
+TRUNC(123.456,2)                                                                
+----------------                                                                
+          123.45                                                                
+
+SQL> select sqrt(9) as square_root, power(9,2) as square, power(9,5) as fifth_power from dual;
+
+SQUARE_ROOT     SQUARE FIFTH_POWER                                              
+----------- ---------- -----------                                              
+          3         81       59049                                              
+
+SQL> select round(123.456,2) as rounded_value from dual;
+
+ROUNDED_VALUE                                                                   
+-------------                                                                   
+       123.46                                                                   
+
+SQL> select abs(123) as absolute_value, mod(123,10) as remainder from dual;
+
+ABSOLUTE_VALUE  REMAINDER                                                       
+-------------- ----------                                                       
+           123          3                                                       
+
+SQL> select floor(234.36), ceil(234.36), floor(-234.26), ceil(-234.26) from dual;
+
+FLOOR(234.36) CEIL(234.36) FLOOR(-234.36) CEIL(-234.36)                         
+------------- ------------ -------------- -------------                         
+          234          235           -235          -234                         
+
+SQL> select
+  2  to_char(start_date, 'DD-Month-YYYY') as start_date,
+  3  to_char(end_date, 'DD-Month-YYYY') as end_date from prj_details;
+
+START_DATE                                                                      
+--------------------------------------------                                    
+END_DATE                                                                        
+--------------------------------------------                                    
+10-January  -2020                                                               
+11-October  -2022                                                               
+                                                                                
+01-January  -2019                                                               
+10-July     -2021                                                               
+                                                                                
+03-September-2021                                                               
+10-October  -2023                                                               
+                                                                                
+
+START_DATE                                                                      
+--------------------------------------------                                    
+END_DATE                                                                        
+--------------------------------------------                                    
+28-February -2020                                                               
+09-June     -2021                                                               
+                                                                                
+07-August   -2018                                                               
+04-February -2020                                                               
+                                                                                
+21-February -2020                                                               
+07-August   -2020                                                               
+                                                                                
+
+START_DATE                                                                      
+--------------------------------------------                                    
+END_DATE                                                                        
+--------------------------------------------                                    
+24-March    -2017                                                               
+09-December -2018                                                               
+                                                                                
+28-September-2024                                                               
+16-April    -2025                                                               
+                                                                                
+
+8 rows selected.
+
+SQL> select to_char(actual_end_date, 'Month-YYYY') as project_closed_month_year from prj_details;
+
+PROJECT_CLOSED_MONTH_YEAR                                                       
+-----------------------------------------                                       
+October  -2022                                                                  
+December -2021                                                                  
+October  -2023                                                                  
+January  -2022                                                                  
+November -2020                                                                  
+September-2020                                                                  
+February -2019                                                                  
+                                                                                
+
+8 rows selected.
+
+SQL> SELECT
+  2      TO_CHAR(start_date, 'Month') AS project_start_month,
+  3      TO_CHAR(start_date, 'DD') AS project_start_day,
+  4      TO_CHAR(start_date, 'YYYY') AS project_start_year
+  5  FROM prj_details;
+
+PROJECT_START_MONTH                  PR PROJ                                    
+------------------------------------ -- ----                                    
+January                              10 2020                                    
+January                              01 2019                                    
+September                            03 2021                                    
+February                             28 2020                                    
+August                               07 2018                                    
+February                             21 2020                                    
+March                                24 2017                                    
+September                            28 2024                                    
+
+
+SQL> select prj_name, months_between(end_date, start_date) as months_between from prj_details;
+
+PRJ_NAME   MONTHS_BETWEEN                                                       
+---------- --------------                                                       
+Spyder         33.0322581                                                       
+Apollo         30.2903226                                                       
+Unicorn        25.2258065                                                       
+Zeus           15.3870968                                                       
+Jupitor        17.9032258                                                       
+Mars            5.5483871                                                       
+XXX             20.516129                                                       
+Saturn         6.61290323                                                       
+
+8 rows selected.
+
+SQL> SELECT
+  2      prj_name,
+  3      end_date,
+  4      ADD_MONTHS(end_date, 2) AS date_after_2_months
+  5  FROM prj_details;
+
+PRJ_NAME   END_DATE  DATE_AFTE                                                  
+---------- --------- ---------                                                  
+Spyder     11-OCT-22 11-DEC-22                                                  
+Apollo     10-JUL-21 10-SEP-21                                                  
+Unicorn    10-OCT-23 10-DEC-23                                                  
+Zeus       09-JUN-21 09-AUG-21                                                  
+Jupitor    04-FEB-20 04-APR-20                                                  
+Mars       07-AUG-20 07-OCT-20                                                  
+XXX        09-DEC-18 09-FEB-19                                                  
+Saturn     16-APR-25 16-JUN-25                                                  
+
+8 rows selected.
+
+SQL> SELECT NEXT_DAY(SYSDATE, 'THURSDAY') AS next_thursday
+  2  FROM dual;
+
+NEXT_THUR                                                                       
+---------                                                                       
+20-FEB-25                                                                       
+
+SQL> spool off;

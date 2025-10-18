@@ -1,0 +1,53 @@
+SQL> alter table emp add reports_to number;
+
+Table altered.
+
+SQL> alter table emp add constraint fk_reports_to_empcode foreign key(reports_to) references emp(empcode);
+
+Table altered.
+
+SQL> alter table skill add constraint ck_skillid_starts_with_s check (skillid like 's%');
+
+Table altered.
+
+SQL> alter table emp_skill add constraint pk_empno_skillid primary key(empno,skillid);
+
+Table altered.
+
+SQL> alter table prj_details add constraint unq_prj_name unique (prj_name);
+
+Table altered.
+
+SQL> alter table client add email varchar(30);
+
+Table altered.
+
+SQL> alter table client add constraint valid_email check(email like '%@%.___');
+
+Table altered.
+
+SQL> alter table emp add constraint unq_phone unique(phone);
+
+Table altered.
+
+SQL> alter table emp add constraint unq_email unique(email);
+
+Table altered.
+
+SQL> alter table medical_policy drop constraint pk_mp;
+
+Table altered.
+
+SQL> alter table medical_policy add constraint pk_medical_policy primary key(empno, policyno, policydate);
+
+Table altered.
+
+SQL> alter table medical_policy drop constraint premium_chk;
+
+Table altered.
+
+SQL> alter table medical_policy add constraint premium_chk check(premium > 1000);
+
+Table altered.
+
+SQL> spool off;

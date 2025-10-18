@@ -1,0 +1,330 @@
+SQL> select * from client;
+
+CLI NAME       PHONE          EMAIL                                                                                                                                                                     
+--- ---------- -------------- ------------------------------                                                                                                                                            
+C02 LTS        +91-78389397   bbb@lts.com                                                                                                                                                               
+C03 RK         +44-67838934   ccc@rk.com                                                                                                                                                                
+C04 MMA        +31-77839093   ddd@mma.com                                                                                                                                                               
+C05 AKS        +81-66822903   eee@aks.com                                                                                                                                                               
+C06 GKS        +48-75628982   fff@gks.com                                                                                                                                                               
+C07 BB         +91-64839839   ggg@bb.com                                                                                                                                                                
+C08 ABT        +91-67554667   hhh@abt.com                                                                                                                                                               
+C09 XYZ        +31-8485914    xyz@ab.com                                                                                                                                                                
+
+8 rows selected.
+
+
+
+SQL> select name, phone, email from emp where designation = 'developer';
+
+NAME            PHONE EMAIL                                                                                                                                                                             
+---------- ---------- --------------------                                                                                                                                                              
+Rajesh     8010295085 rajesh@digisol.com                                                                                                                                                                
+Manish     9320590124 manish@digisol.com                                                                                                                                                                
+Rakesh     9023589124 rakesh@digisol.com                                                                                                                                                                
+Rakesh     9985501234 rakesh1@digisol.com                                                                                                                                                               
+Puneet     9768291247 puneet@digisol.com                                                                                                                                                                
+Raj        9121853527 raj1@digisol.com                                                                                                                                                                  
+
+6 rows selected.
+
+SQL> select name from emp where reports_to = 106;
+
+NAME                                                                                                                                                                                                    
+----------                                                                                                                                                                                              
+Ajay                                                                                                                                                                                                    
+Bhaskar                                                                                                                                                                                                 
+Manish                                                                                                                                                                                                  
+Puneet                                                                                                                                                                                                  
+
+
+SQL> select name, email from emp where designation = 'technical head' and qualification = 'btech';
+
+NAME       EMAIL                                                                                                                                                                                        
+---------- --------------------                                                                                                                                                                         
+Ajay       ajay@digisol.com                                                                                                                                                                             
+
+SQL> select name from emp where salary between 100000 and 200000;
+
+NAME                                                                                                                                                                                                    
+----------                                                                                                                                                                                              
+Ravi                                                                                                                                                                                                    
+Bhaskar                                                                                                                                                                                                 
+Raj                                                                                                                                                                                                     
+Manish                                                                                                                                                                                                  
+Rakesh                                                                                                                                                                                                  
+Rakesh                                                                                                                                                                                                  
+Puneet                                                                                                                                                                                                  
+Raj                                                                                                                                                                                                     
+
+8 rows selected.
+
+SQL> select name from emp where salary >= 100000 and salary <= 200000;
+
+NAME                                                                                                                                                                                                    
+----------                                                                                                                                                                                              
+Ravi                                                                                                                                                                                                    
+Bhaskar                                                                                                                                                                                                 
+Raj                                                                                                                                                                                                     
+Manish                                                                                                                                                                                                  
+Rakesh                                                                                                                                                                                                  
+Rakesh                                                                                                                                                                                                  
+Puneet                                                                                                                                                                                                  
+Raj                                                                                                                                                                                                     
+
+8 rows selected.
+
+
+SQL> select s.skillname from emp_skill es join skill s on es.skillid = s.skillid where es.empno = 101;
+
+SKILLNAME                                                                                                                                                                                               
+--------------------                                                                                                                                                                                    
+Full Stack                                                                                                                                                                                              
+Python                                                                                                                                                                                                  
+Java                                                                                                                                                                                                    
+
+
+
+
+SQL> select empcode from work_exp where(clientid = 'C01' or clientid = 'C02') and (rating = 'A' or rating = 'B');
+
+   EMPCODE                                                                                                                                                                                              
+----------                                                                                                                                                                                              
+       102                                                                                                                                                                                              
+       105                                                                                                                                                                                              
+
+SQL> select e.name from emp e join work_exp w on e.empcode = w.empcode where w.clientid = 'C02' and w.rating = 'B';
+
+NAME                                                                                                                                                                                                    
+----------                                                                                                                                                                                              
+Vijay                                                                                                                                                                                                   
+Manish                                                                                                                                                                                                  
+
+
+
+SQL> select count(fd.dep_name) from emp e join family_dependents fd on e.empcode = fd.empno where e.name = 'Ravi'
+  2  ;
+
+COUNT(FD.DEP_NAME)                                                                                                                                                                                      
+------------------                                                                                                                                                                                      
+                 3                                                                                                                                                                                      
+
+SQL> select name, designation, salary*12 as Annual_Salary from emp;
+
+NAME       DESIGNATION          ANNUAL_SALARY                                                                                                                                                           
+---------- -------------------- -------------                                                                                                                                                           
+Rajesh     developer                  2424000                                                                                                                                                           
+Ravi       project leader             1920000                                                                                                                                                           
+Vijay      project manager            2640000                                                                                                                                                           
+Ajay       technical head             3000000                                                                                                                                                           
+Bhaskar    project director           1740000                                                                                                                                                           
+Raj        project leader             1440000                                                                                                                                                           
+Manish     developer                  1212000                                                                                                                                                           
+Prasad     ceo                        3360000                                                                                                                                                           
+Rakesh     developer                  1272600                                                                                                                                                           
+Rakesh     developer                  1636200                                                                                                                                                           
+Rajat      project director           2460000                                                                                                                                                           
+
+NAME       DESIGNATION          ANNUAL_SALARY                                                                                                                                                           
+---------- -------------------- -------------                                                                                                                                                           
+Puneet     developer                  1818000                                                                                                                                                           
+Raj        developer                  1575600                                                                                                                                                           
+
+13 rows selected.
+
+SQL> select e.name, fd.dep_name from emp e left join family_dependents fd on e.empcode = fd.empno;
+
+NAME       DEP_NAME                                                                                                                                                                                     
+---------- --------------------                                                                                                                                                                         
+Rajesh     Prithvi                                                                                                                                                                                      
+Rajesh     Ajith                                                                                                                                                                                        
+Ravi       Akanksh                                                                                                                                                                                      
+Ravi       Anitha                                                                                                                                                                                       
+Ravi       Aarya                                                                                                                                                                                        
+Vijay                                                                                                                                                                                                   
+Manish                                                                                                                                                                                                  
+Raj                                                                                                                                                                                                     
+Prasad                                                                                                                                                                                                  
+Ajay                                                                                                                                                                                                    
+Rajat                                                                                                                                                                                                   
+
+NAME       DEP_NAME                                                                                                                                                                                     
+---------- --------------------                                                                                                                                                                         
+Bhaskar                                                                                                                                                                                                 
+Raj                                                                                                                                                                                                     
+Rakesh                                                                                                                                                                                                  
+Rakesh                                                                                                                                                                                                  
+Puneet                                                                                                                                                                                                  
+
+16 rows selected.
+
+
+SQL> select e.name as leader_name, pd.prj_name from prj_details pd join emp e on pd.lead_by_empcode = e.empcode where pd.actual_end_date <= pd.end_date and pd.actual_budget <= pd.budget_allocated;
+
+LEADER_NAM PRJ_NAME                                                                                                                                                                                     
+---------- ----------                                                                                                                                                                                   
+Vijay      Spyder                                                                                                                                                                                       
+
+SQL> select e.name, e.salary, p.regular_increment from emp e join pay_check p on e.empcode = p.empcode where extract(month from p.pay_date) = 3;
+
+no rows selected
+
+
+SQL> select e.name as employee_name, m.name as higher_authority_name, m.phone as higher_authority_phone from emp e left join emp m on e.reports_to = m.empcode;
+
+EMPLOYEE_N HIGHER_AUT HIGHER_AUTHORITY_PHONE                                                                                                                                                            
+---------- ---------- ----------------------                                                                                                                                                            
+Rajesh     Ravi                   8801458024                                                                                                                                                            
+Ravi       Vijay                  9118250241                                                                                                                                                            
+Raj        Vijay                  9118250241                                                                                                                                                            
+Vijay      Bhaskar                7841051518                                                                                                                                                            
+Raj        Bhaskar                7841051518                                                                                                                                                            
+Ajay       Raj                    7232875210                                                                                                                                                            
+Bhaskar    Raj                    7232875210                                                                                                                                                            
+Manish     Raj                    7232875210                                                                                                                                                            
+Puneet     Raj                    7232875210                                                                                                                                                            
+Rakesh     Prasad                 6606290124                                                                                                                                                            
+Rakesh     Prasad                 6606290124                                                                                                                                                            
+
+EMPLOYEE_N HIGHER_AUT HIGHER_AUTHORITY_PHONE                                                                                                                                                            
+---------- ---------- ----------------------                                                                                                                                                            
+Rajat      Prasad                 6606290124                                                                                                                                                            
+Prasad                                                                                                                                                                                                  
+
+13 rows selected.
+
+
+
+SQL> select * from prj_details order by actual_end_date desc;
+
+PRJ PRJ_NAME   START_DAT END_DATE  ACTUAL_EN LEAD_BY_EMPCODE BUDGET_ALLOCATED ACTUAL_BUDGET                                                                                                             
+--- ---------- --------- --------- --------- --------------- ---------------- -------------                                                                                                             
+P7  Saturn     28-SEP-24 16-APR-25                       101          3400000                                                                                                                           
+P3  Unicorn    03-SEP-21 10-OCT-23 10-OCT-23             106          7500000       8000000                                                                                                             
+P1  Spyder     10-JAN-20 11-OCT-22 11-OCT-22             102          2000000       1990000                                                                                                             
+P4  Zeus       28-FEB-20 09-JUN-21 10-JAN-22             110          5500000       5000000                                                                                                             
+P2  Apollo     01-JAN-19 10-JUL-21 30-DEC-21             108          3000000       3600000                                                                                                             
+P5  Jupitor    07-AUG-18 04-FEB-20 01-NOV-20             110          9000000       9000000                                                                                                             
+P6  Mars       21-FEB-20 07-AUG-20 01-SEP-20             106          1500000       1800000                                                                                                             
+P8  XXX        24-MAR-17 09-DEC-18 01-FEB-19             109          2100000       2000000                                                                                                             
+
+8 rows selected.
+
+
+SQL> select e.name, s.skillname from emp e join emp_skill es on e.empcode = es.empno join skill s on es.skillid = s.skillid order by e.empcode asc, es.skill_experience desc;
+
+NAME       SKILLNAME                                                                                                                                                                                    
+---------- --------------------                                                                                                                                                                         
+Rajesh     Full Stack                                                                                                                                                                                   
+Rajesh     Java                                                                                                                                                                                         
+Ravi       Python                                                                                                                                                                                       
+Ravi       Java                                                                                                                                                                                         
+Ravi       Full Stack                                                                                                                                                                                   
+Vijay      C++                                                                                                                                                                                          
+Manish     Android                                                                                                                                                                                      
+Manish     iOS                                                                                                                                                                                          
+Raj        Oracle                                                                                                                                                                                       
+Raj        Python                                                                                                                                                                                       
+Raj        Azure                                                                                                                                                                                        
+
+NAME       SKILLNAME                                                                                                                                                                                    
+---------- --------------------                                                                                                                                                                         
+Ajay       Oracle                                                                                                                                                                                       
+Ajay       DOT NET                                                                                                                                                                                      
+Bhaskar    Oracle                                                                                                                                                                                       
+Bhaskar    Full Stack                                                                                                                                                                                   
+
+15 rows selected.
+                                                                                                                                      
+
+SQL> select e.name, fd.dep_name, fd.age from emp e join family_dependents fd on e.empcode = fd.empno where relationship = 'son' order by e.name asc, fd.age desc;
+
+no rows selected
+
+
+SQL> select e.name, pd.prj_name from emp e join prj_details pd on e.empcode = pd.lead_by_empcode order by e.name asc, pd.prj_name desc;
+
+NAME       PRJ_NAME                                                                                                                                                                                     
+---------- ----------                                                                                                                                                                                   
+Ajay       Apollo                                                                                                                                                                                       
+Bhaskar    Zeus                                                                                                                                                                                         
+Bhaskar    Jupitor                                                                                                                                                                                      
+Raj        Unicorn                                                                                                                                                                                      
+Raj        Mars                                                                                                                                                                                         
+Rajat      XXX                                                                                                                                                                                          
+Ravi       Saturn                                                                                                                                                                                       
+Vijay      Spyder                                                                                                                                                                                       
+
+8 rows selected.
+
+
+
+SQL> select e.name from emp e join prj_details pd on e.empcode = pd.lead_by_empcode where pd.prj_name = 'Spyder' union select e.name from emp e join prj_details pd on e.empcode = pd.lead_by_empcode where pd.prj_name = 'Apollo';
+
+NAME                                                                                                                                                                                                    
+----------                                                                                                                                                                                              
+Ajay                                                                                                                                                                                                    
+Vijay                                                                                                                                                                                                   
+
+
+
+SQL> select e.name from emp e join emp_skill es on e.empcode = es.empno join skill s on es.skillid = s.skillid where s.skillname = 'Oracle' intersect select e.name from emp e join emp_skill es on e.empcode = es.empno join skill s on es.skillid = s.skillid where s.skillname = 'Azure';
+
+NAME                                                                                                                                                                                                    
+----------                                                                                                                                                                                              
+Raj                                                                                                                                                                                                     
+
+
+SQL> select e.name from emp e join prj_details pd on e.empcode = pd.lead_by_empcode where pd.prj_name != 'Jupitor' minus select e.name from emp e join prj_details pd on e.empcode = pd.lead_by_empcode where pd.prj_name = 'Jupitor';
+
+NAME                                                                                                                                                                                                    
+----------                                                                                                                                                                                              
+Ajay                                                                                                                                                                                                    
+Raj                                                                                                                                                                                                     
+Rajat                                                                                                                                                                                                   
+Ravi                                                                                                                                                                                                    
+Vijay                                                                                                                                                                                                   
+
+SQL> select name from emp where reports_to is NULL;
+
+NAME                                                                                                                                                                                                    
+----------                                                                                                                                                                                              
+Prasad                                                                                                                                                                                                  
+
+SQL> select name, email from emp where name like 'Ra%';
+
+NAME       EMAIL                                                                                                                                                                                        
+---------- --------------------                                                                                                                                                                         
+Rajesh     rajesh@digisol.com                                                                                                                                                                           
+Ravi       ravi@digisol.com                                                                                                                                                                             
+Raj        raj@digisol.com                                                                                                                                                                              
+Rakesh     rakesh@digisol.com                                                                                                                                                                           
+Rakesh     rakesh1@digisol.com                                                                                                                                                                          
+Rajat      rajat@digisol.com                                                                                                                                                                            
+Raj        raj1@digisol.com                                                                                                                                                                             
+
+7 rows selected.
+
+SQL> select prj_name from prj_details where start_date between TO_DATE('01-01-2020','DD-MM-YYYY') and TO_DATE('14-12-2020','DD-MM-YYYY');
+
+PRJ_NAME                                                                                                                                                                                                
+----------                                                                                                                                                                                              
+Spyder                                                                                                                                                                                                  
+Zeus                                                                                                                                                                                                    
+Mars                                                                                                                                                                                                    
+
+SQL> select e.name from emp e join emp_skill es on e.empcode = es.empno where es.skillid in (select skillid from emp_skill where empno = 101);
+
+NAME                                                                                                                                                                                                    
+----------                                                                                                                                                                                              
+Rajesh                                                                                                                                                                                                  
+Rajesh                                                                                                                                                                                                  
+Ravi                                                                                                                                                                                                    
+Ravi                                                                                                                                                                                                    
+Ravi                                                                                                                                                                                                    
+Raj                                                                                                                                                                                                     
+Bhaskar                                                                                                                                                                                                 
+
+7 rows selected.
+
+SQL> spool off;

@@ -1,0 +1,399 @@
+SQL> set serveroutput on;
+SQL> accept input_number number prompt 'Enter a number: '
+Enter a number: 1234
+SQL> declare
+    original_number number := 1234;
+    reversed_number number := 0;
+    remainder number;
+    begin
+    while original_number > 0 loop
+    remainder := mod(original_number, 10);
+    reversed_number := reversed_number * 10 + remainder;
+    original_number := trunc(original_number /10);
+    end loop;
+    dbms_output.put_line('Reversed number: ' || reversed_number);
+    end;
+    /
+Reversed number: 4321
+
+PL/SQL procedure successfully completed.
+
+SQL> DECLARE
+      input_word VARCHAR2(100);
+      reversed_word VARCHAR2(100) := '';
+      length_of_word NUMBER;
+    BEGIN
+      input_word := '&input_word';
+      length_of_word := LENGTH(input_word);
+      FOR i IN REVERSE 1..length_of_word LOOP
+        reversed_word := reversed_word || SUBSTR(input_word, i, 1);
+      END LOOP;
+      IF input_word = reversed_word THEN
+        DBMS_OUTPUT.PUT_LINE('The word ' || input_word || ' is a palindrome.');
+      ELSE
+        DBMS_OUTPUT.PUT_LINE('The word ' || input_word || ' is not a palindrome.');
+      END IF;
+    END;
+    /
+Enter value for input_word: madam
+old   7:   input_word := '&input_word';
+new   7:   input_word := 'madam';
+The word madam is a palindrome.
+
+PL/SQL procedure successfully completed.
+
+Set serveroutput on
+Declare
+ v_empdetails emp%rowtype;
+ v_empcode emp.empcode%type; 
+Begin
+ v_empcode:=&empcode;
+ Select * into v_empdetails from emp where empcode=v_empcode;
+ dbms_output.put_line(v_empdetails.name);
+ dbms_output.put_line(v_empdetails.Qualification);
+ dbms_output.put_line(v_empdetails.phone);
+ dbms_output.put_line(v_empdetails.email);
+ dbms_output.put_line(v_empdetails.designation);
+ dbms_output.put_line(v_empdetails.salary);
+ dbms_output.put_line(v_empdetails.reports_to);
+End;
+/
+ 
+
+Set serveroutput on
+Declare
+ inputString varchar(50);
+ countVowels number:=0;
+ countConsonants number:=0;
+ countNumbers number:=0;
+ countSpecial number:=0;
+ eachChar varchar(1);
+Begin
+ inputString:=&inputSting;
+ for i in 1.. LENGTH(inputString) loop
+  eachChar:=substr(inputString,i,1);
+  if(lower(eachChar) in ('a','e','i','o','u')) then
+   countVowels:=countVowels+1;
+  elsif(eachChar in('0','1','2','3','4','5','6','7','8','9')) then
+   countNumbers:= countNumbers+1;
+  elsif(ascii(upper(eachChar)) > ascii('A') and ascii(upper(eachChar)) < ascii('Z') and upper(eachChar) not in ('A','E','I','O','U')) then
+   countConsonants:= countConsonants+1;
+  else
+    countSpecial:=countSpecial+1;
+   end if;
+ end loop; 
+ dbms_output.put_line('Vowels count:'|| countVowels);
+ dbms_output.put_line('Consonants count:'|| countConsonants);
+ dbms_output.put_line('Numbers count:'|| countNumbers);
+ dbms_output.put_line('Special characters count:'|| countSpecial);
+End;
+/
+
+
+set serveroutput on
+declare
+  v_empcode work_exp.empcode%type;
+  v_projectid work_exp.prjid%type;
+  v_rating work_exp.rating%type;
+  incentive number(5);
+  v_name emp.name%type;
+  v_sal emp.salary%type;
+  v_prjname prj_details.prj_name%type;
+  total_sal number(8);
+begin
+ v_empcode:= &empcode;
+ v_projectid:= & prjid;
+ select rating into v_rating from work_exp where empcode=v_empcode and prjid=v_projectid;
+case v_rating
+ when 'A' then 
+  incentive:=900;
+  update pay_check set OTHER_INCENTIVES=OTHER_INCENTIVES+incentive where empcode=v_empcode;  
+ when 'B' then 
+  incentive:=500;
+  update pay_check set OTHER_INCENTIVES=OTHER_INCENTIVES+incentive where empcode=v_empcode; 
+ when 'C' then 
+  incentive:=300;
+  update pay_check set OTHER_INCENTIVES=OTHER_INCENTIVES+incentive where empcode=v_empcode;  
+  
+end case;
+  select distinct name,salary into v_name,v_sal FROM emp
+  JOIN work_exp ON emp.empcode = work_exp.empcode WHERE work_exp.empcode = v_empcode AND work_exp.prjid = v_projectid;
+  select distinct prj_name into v_prjname from prj_details JOIN work_exp ON prj_details.prjid = work_exp.prjid WHERE work_exp.prjid = v_projectid;
+  total_sal:= v_sal+incentive;
+  dbms_output.put_line('Employee number: '||v_empcode || 
+' Employee Name: '||v_name || 
+' salary: '|| v_sal ||' Project Name: '|| v_prjname || ' rating: '||v_rating || ' Incentive: '|| incentive ||' Total Salary: '||total_sal);
+End;
+/ 
+
+
+set serveroutput on 
+declare
+
+v_empcode number(3) :=100;
+v_name emp.name%type;
+v_sal emp.salary%type;
+v_ri  pay_check.regular_increment%type;
+v_pi  pay_check.PERFORMANCE_INCENTIVE%type;
+v_oi  pay_check.other_incentives%type;
+v_at  pay_check.advance_tax%type;
+v_da  pay_check.da%type;
+v_pf  pay_check.pf%type;
+monthly_gross_sal number(8);
+monthly_take_sal  number(8);
+increased_basic_sal  number(8);
+
+begin
+select distinct name,salary into v_name,v_sal FROM emp where empcode =100;
+select regular_increment,PERFORMANCE_INCENTIVE,other_incentives,advance_tax into v_ri,v_pi,v_oi,v_at from pay_check where empcode = v_empcode and pay_date=to_date('01-01-2021','dd-mm-yyyy');
+increased_basic_sal:= v_sal + v_ri;
+v_da:=0.50*increased_basic_sal;
+v_pf:=0.12*increased_basic_sal;
+monthly_gross_sal:=v_sal+v_ri+v_pi+v_da+v_pf+v_oi;
+monthly_take_sal:= monthly_gross_sal-v_pi-v_at;
+dbms_output.put_line(' Employee Name: '||v_name || 
+' salary: '|| v_sal ||' Regular Increment: '|| v_ri || ' Increased Basic Salary: '||increased_basic_sal || ' Performance Incentive: '|| v_pi ||' DA: '||v_da || ' PF: ' ||v_pf || ' Other Incentive: '|| v_oi || ' Advanced tax paid: ' || v_at ||' Monthly gross salary: '|| monthly_gross_sal || ' Monthly take home salary: '|| monthly_take_sal);
+End;
+
+SET SERVEROUTPUT ON
+DECLARE
+    CURSOR c IS
+        SELECT name, salary, regular_increment, PERFORMANCE_INCENTIVE, advance_tax, other_incentives
+        FROM emp NATURAL JOIN pay_check
+        WHERE TO_CHAR(pay_date, 'MM-YY') = '01-21';
+
+    v_emprow emp%ROWTYPE;
+    v_paycheck pay_check%ROWTYPE;
+    v_ibs NUMBER;
+    v_da NUMBER;
+    v_pf NUMBER;
+    v_mgs NUMBER;
+BEGIN
+    FOR i IN c LOOP
+        v_ibs := i.salary + i.regular_increment;
+        v_da := 0.5 * v_ibs;
+        v_pf := 0.12 * v_ibs;
+        v_mgs := i.salary + i.regular_increment + v_da + v_pf;
+
+        dbms_output.put_line('Name: ' || i.name);
+        dbms_output.put_line('Basic_Salary: ' || i.salary);
+        dbms_output.put_line('Regular Increment: ' || i.regular_increment);
+        dbms_output.put_line('Increased basic salary: ' || v_ibs);
+        dbms_output.put_line('Performance incentive: ' || i.PERFORMANCE_INCENTIVE);
+        dbms_output.put_line('DA: ' || v_da);
+        dbms_output.put_line('PF: ' || v_pf);
+        dbms_output.put_line('Other incentive: ' || i.other_incentives);
+        dbms_output.put_line('Advance tax paid: ' || i.advance_tax);
+        dbms_output.put_line('Monthly Gross Salary: ' || v_mgs);
+        dbms_output.put_line('Monthly Take home salary: ' || (v_mgs - v_pf - i.advance_tax));
+        dbms_output.put_line('...');
+    END LOOP;
+
+END;
+
+Name: Rajesh
+Basic_Salary: 212100
+Regular Increment: 3000
+Increased basic salary: 215100
+Performance incentive:
+DA: 107550
+PF: 25812
+Other incentive: 450
+Advance tax paid: 4000
+Monthly Gross Salary: 348462
+Monthly Take home salary: 318650
+...
+Name: Ravi
+Basic_Salary: 193600
+Regular Increment: 5000
+Increased basic salary: 198600
+Performance incentive:
+DA: 99300
+PF: 23832
+Other incentive: 2100
+Advance tax paid: 4000
+Monthly Gross Salary: 321732
+Monthly Take home salary: 293900
+...
+Name: Vijay
+Basic_Salary: 220000
+Regular Increment: 5000
+Increased basic salary: 225000
+Performance incentive:
+DA: 112500
+PF: 27000
+Other incentive:
+Advance tax paid: 9000
+Monthly Gross Salary: 364500
+Monthly Take home salary: 328500
+...
+
+PL/SQL procedure successfully completed.
+
+
+create table account(
+	account_number varchar2(20) primary key,
+	balance number(10) constraint min_balance check(balance>=1000));
+
+insert all
+into account values('acc-001',50000)
+into account values('acc-002',65000)
+into account values('acc-003',20000)
+into account values('acc-004',70000)
+into account values('acc-005',2000)
+select * from dual;
+
+set serveroutput on
+declare
+acc_no account.account_number%type;
+with_amu number(10);
+bal account.balance%type;
+new_bal account.balance%type;
+
+begin
+acc_no:=&account_number;
+with_amu:=&withdraw_amount;
+
+select balance into bal from account where account_number=acc_no;
+
+new_bal:= bal-with_amu;
+case 
+when new_bal >1000 then
+update account set balance=new_bal where account_number=acc_no;
+dbms_output.put_line('current balance:'||bal);
+dbms_output.put_line('withdrawal of '||with_amu || 'is successful');
+dbms_output.put_line('updated current balance ' || new_bal);
+
+when new_bal <=1000 then
+dbms_output.put_line('current balance:'||bal);
+dbms_output.put_line('insufficient fund to withdraw, try with lesser withdrawal amount');
+end case;
+
+end;
+/
+
+SQL> declare
+  2  acc_no account.account_number%type;
+  3  with_amu number(10);
+  4  bal account.balance%type;
+  5  new_bal account.balance%type;
+  6  min_balance exception;
+  7  cursor ac(acc_no varchar2) is select balance from account where account_number=acc_no;
+  8
+  9  begin
+ 10  acc_no:=&account_number;
+ 11  with_amu:=&withdraw_amount;
+ 12
+ 13  open ac(acc_no);
+ 14  fetch ac into bal;
+ 15  if(ac%notfound) then raise no_data_found;
+ 16  end if;
+ 17  if(ac%found) then
+ 18  new_bal:= bal-with_amu;
+ 19  case
+ 20  when new_bal >1000 then
+ 21  update account set balance=new_bal where account_number=acc_no;
+ 22  dbms_output.put_line('current balance:'||bal);
+ 23  dbms_output.put_line('withdrawal of '||with_amu || 'is successful');
+ 24  dbms_output.put_line('updated current balance ' || new_bal);
+ 25
+ 26  when new_bal <=1000 then
+ 27  dbms_output.put_line('current balance:'||bal);
+ 28  raise min_balance;
+ 29  end case;
+ 30  end if;
+ 31  close ac;
+ 32
+ 33  exception
+ 34   when no_data_found then dbms_output.put_line('Entry of not existing Account number.');
+ 35   when min_balance then dbms_output.put_line('insufficient fund to withdraw, try with lesser withdrawal amount');
+ 36  end;
+ 37  /
+
+
+SQL> set serveroutput on
+SQL> declare
+  2
+  3  cursor project(skill_exp number) is select s.skillname,count(s.skillname) human_resource_available from skill s natural join emp_skill e where e.skill_experience>=skill_exp group by s.skillname;
+  4  skill emp_skill.skill_experience%type;
+  5
+  6  begin
+  7  skill:=&skill_experience;
+  8  dbms_output.put_line('human resource for skill experience '||skill ||' are: ');
+  9  for i in project(skill) loop
+ 10  dbms_output.put_line('skill name: '||i.skillname);
+ 11  dbms_output.put_line('human resource: '|| i.human_resource_available);
+ 12  dbms_output.put_line('--------------------------------');
+ 13  end loop;
+ 14
+ 15  end;
+ 16  /
+Enter value for skill_experience: 7
+old   7: skill:=&skill_experience;
+new   7: skill:=7;
+human resource for skill experience 7 are:
+skill name: Oracle
+human resource: 3
+--------------------------------
+skill name: iOS
+human resource: 1
+--------------------------------
+skill name: Full Stack
+human resource: 2
+--------------------------------
+skill name: Java
+human resource: 2
+--------------------------------
+skill name: Python
+human resource: 2
+--------------------------------
+skill name: C++
+human resource: 1
+--------------------------------
+skill name: Android
+human resource: 1
+--------------------------------
+skill name: Azure
+human resource: 1
+--------------------------------
+
+set serveroutput on
+declare
+cursor work(client varchar2,rating varchar2) is select e.empcode,e.name,e.designation from emp e join work_exp w on e.empcode=w.empcode where w.client_id=client and w.rating=rating;
+client work_exp.client_id%type;
+rating work_exp.rating%type;
+
+begin
+client:= &client_id;
+rating:= &rating;
+
+for i in work(client,rating) loop
+dbms_output.put_line('empcode: '||i.empcode);
+dbms_output.put_line('name: '||i.name);
+dbms_output.put_line('designation: '||i.designation);
+dbms_output.put_line('------------------------------');
+end loop;
+end;
+/
+
+set serveroutput on
+declare
+  cursor work is 
+    select e.name, sum(work_experience) total_work_exp 
+    from emp e 
+    join work_exp w on e.empcode=w.empcode 
+    group by e.name 
+    order by total_work_exp desc;
+  counter number := 0; 
+begin 
+  for i in work loop
+    counter := counter + 1;
+    dbms_output.put_line('name: '||i.name);
+    dbms_output.put_line('work exp: '|| i.total_work_exp);
+    dbms_output.put_line('-----------------------------');
+    if counter >= 5 then -- Break the loop when 5 records are processed
+      exit;
+    end if;
+  end loop;
+end;
+/
